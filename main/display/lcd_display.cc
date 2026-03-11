@@ -350,6 +350,7 @@ void LcdDisplay::Unlock() {
     lvgl_port_unlock();
 }
 
+/*重写父类SetupUI*/
 #if CONFIG_USE_WECHAT_MESSAGE_STYLE
 void LcdDisplay::SetupUI() {
     // Prevent duplicate calls - if already called, return early
@@ -376,6 +377,7 @@ void LcdDisplay::SetupUI() {
     lv_obj_set_size(container_, LV_HOR_RES, LV_VER_RES);
     lv_obj_set_style_radius(container_, 0, 0);
     lv_obj_set_flex_flow(container_, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(container_, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER);//子容器由上往下顺序排列
     lv_obj_set_style_pad_all(container_, 0, 0);
     lv_obj_set_style_border_width(container_, 0, 0);
     lv_obj_set_style_pad_row(container_, 0, 0);
@@ -397,6 +399,8 @@ void LcdDisplay::SetupUI() {
     lv_obj_set_flex_flow(top_bar_, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(top_bar_, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_scrollbar_mode(top_bar_, LV_SCROLLBAR_MODE_OFF);
+
+
 
     // Left icon
     network_label_ = lv_label_create(top_bar_);
@@ -471,6 +475,43 @@ void LcdDisplay::SetupUI() {
     lv_obj_set_flex_align(content_, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
     lv_obj_set_style_pad_row(content_, lvgl_theme->spacing(4), 0); // Space between messages
 
+    /* Bottom bar */
+    bottom_bar_ = lv_obj_create(container_);
+    lv_obj_set_size(bottom_bar_, LV_HOR_RES, LV_SIZE_CONTENT);
+    lv_obj_set_style_radius(bottom_bar_, 0, 0);
+    lv_obj_set_style_bg_opa(bottom_bar_, LV_OPA_50, 0);  // 50% opacity background
+    lv_obj_set_style_bg_color(bottom_bar_, lvgl_theme->background_color(), 0);
+    lv_obj_set_style_border_width(bottom_bar_, 0, 0);
+    lv_obj_set_style_pad_all(bottom_bar_, 0, 0);
+    lv_obj_set_style_pad_top(bottom_bar_, lvgl_theme->spacing(2), 0);
+    lv_obj_set_style_pad_bottom(bottom_bar_, lvgl_theme->spacing(2), 0);
+    lv_obj_set_style_pad_left(bottom_bar_, lvgl_theme->spacing(4), 0);
+    lv_obj_set_style_pad_right(bottom_bar_, lvgl_theme->spacing(4), 0);
+    lv_obj_set_flex_flow(bottom_bar_, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(bottom_bar_, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_scrollbar_mode(bottom_bar_, LV_SCROLLBAR_MODE_OFF);
+
+    // 1. 创建温度容器（包裹图标和文本，方便整体对齐）
+    lv_obj_t *temp_container = lv_obj_create(bottom_bar_);
+    lv_obj_set_size(temp_container, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+    lv_obj_set_style_bg_opa(temp_container, LV_OPA_TRANSP, 0); // 透明背景
+    lv_obj_set_style_border_width(temp_container, 0, 0);       // 无边框
+    lv_obj_set_style_pad_all(temp_container, 4, 0);            // 内部间距
+    lv_obj_set_flex_flow(temp_container, LV_FLEX_FLOW_ROW);    // 水平排列
+    lv_obj_set_flex_align(temp_container, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+    /* 温度容器内图标和数值 */
+    temperature_label_ = lv_label_create(temp_container);
+    lv_label_set_text(temperature_label_, FONT_AWESOME_TEMPERATURE_HALF);
+    lv_obj_set_style_text_font(temperature_label_, icon_font, 0);
+    lv_obj_set_style_text_color(temperature_label_, lvgl_theme->text_color(), 0);
+
+    temperature_value_label_ = lv_label_create(temp_container);
+    lv_label_set_text(temperature_value_label_, "25°C");
+    lv_obj_set_style_text_font(temperature_value_label_, text_font, 0);
+    lv_obj_set_style_text_color(temperature_value_label_, lvgl_theme->text_color(), 0);
+    lv_obj_set_style_pad_left(temperature_value_label_, 2, 0);   // 与图标间距
+    
     // We'll create chat messages dynamically in SetChatMessage
     chat_message_label_ = nullptr;
 

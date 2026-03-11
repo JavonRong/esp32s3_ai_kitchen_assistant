@@ -50,7 +50,7 @@ public:
     virtual void SetChatMessage(const char* role, const char* content) override;
     virtual void ClearChatMessages() override;
     virtual void SetPreviewImage(std::unique_ptr<LvglImage> image) override;
-    virtual void SetupUI() override;
+    virtual void SetupUI() override;//重写父类的函数SetupUI
     // Add theme switching function
     virtual void SetTheme(Theme* theme) override;
     

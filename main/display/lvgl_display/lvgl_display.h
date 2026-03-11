@@ -29,6 +29,8 @@ protected:
     esp_pm_lock_handle_t pm_lock_ = nullptr;
     lv_display_t *display_ = nullptr;
 
+    lv_obj_t *temperature_value_label_ = nullptr;
+    lv_obj_t *temperature_label_ = nullptr;
     lv_obj_t *network_label_ = nullptr;
     lv_obj_t *status_label_ = nullptr;
     lv_obj_t *notification_label_ = nullptr;

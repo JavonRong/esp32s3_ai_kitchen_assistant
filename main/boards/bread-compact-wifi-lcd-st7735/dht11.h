@@ -101,9 +101,10 @@ public:
                 // 返回上次缓存的值（或可以选择等待，但建议快速返回）
                 // 这里返回上次的值并附加一个提示
                 char json[128];
-
-                ESP_LOGW(TAG, "{\"temperature\":%.1f,\"humidity\":%.1f,\"cached\":true}", 
+                snprintf(json, sizeof(json), 
+                         "{\"temperature\":%.1f,\"humidity\":%.1f,\"cached\":true}", 
                          last_temperature_, last_humidity_);
+                ESP_LOGW(TAG, "返回缓存数据: %s", json);
                 return json;
             }
 
@@ -114,11 +115,14 @@ public:
                 last_read_time_us_ = now;
 
                 char json[128];
-                ESP_LOGW(TAG, "{\"temperature\":%.1f,\"humidity\":%.1f,\"cached\":false}", 
+                snprintf(json, sizeof(json), 
+                         "{\"temperature\":%.1f,\"humidity\":%.1f,\"cached\":false}", 
                          temp, hum);
+                ESP_LOGW(TAG, "读取成功: %s", json);
                 return json;
             } else {
-                return "{\"error\":\"Failed to read DHT11\"}";
+                ESP_LOGE(TAG, "读取 DHT11 失败");
+                return "{\"error\":\"传感器读取失败\"}";
             }
         });
     }
